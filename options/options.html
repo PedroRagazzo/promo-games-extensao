@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Promo Games - Configurações</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="../icons/icon48.png" alt="" width="32" height="32" />
+        <h1>Promo Games - Configurações</h1>
+      </header>
+
+      <section class="card">
+        <h2>1. Chave da API (gratuita)</h2>
+        <p>
+          Esta extensão usa o <a href="https://isthereanydeal.com" target="_blank" rel="noopener">IsThereAnyDeal</a>
+          para comparar preços entre Steam, Epic Games, Nuuvem, GreenManGaming e outras lojas. Crie uma
+          conta gratuita e gere sua chave em
+          <a href="https://isthereanydeal.com/apps/my/" target="_blank" rel="noopener">isthereanydeal.com/apps/my</a>.
+        </p>
+        <label for="apiKeyInput">Chave de API</label>
+        <input id="apiKeyInput" type="text" placeholder="Cole sua chave aqui" autocomplete="off" />
+
+        <label for="countrySelect">País de referência de preços</label>
+        <select id="countrySelect">
+          <option value="BR">Brasil (BRL)</option>
+          <option value="US">Estados Unidos (USD)</option>
+          <option value="PT">Portugal (EUR)</option>
+          <option value="AR">Argentina (ARS)</option>
+          <option value="MX">México (MXN)</option>
+        </select>
+
+        <div class="actions">
+          <button id="saveBtn" class="primary-btn">Salvar</button>
+          <button id="testBtn" class="secondary-btn">Testar chave</button>
+        </div>
+        <p id="feedback" class="feedback" hidden></p>
+      </section>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

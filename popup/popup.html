@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Promo Games</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <img src="../icons/icon32.png" alt="" width="20" height="20" />
+      <h1>Promo Games</h1>
+      <button id="openOptions" class="icon-btn" title="Configurações" aria-label="Configurações">⚙</button>
+    </header>
+
+    <main id="app">
+      <section id="noKeyView" class="state-view" hidden>
+        <p>Configure sua chave gratuita da API do IsThereAnyDeal para começar a comparar preços.</p>
+        <button id="goToOptionsBtn" class="primary-btn">Configurar agora</button>
+      </section>
+
+      <section id="searchView" class="state-view" hidden>
+        <form id="searchForm" class="search-form">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Nome do jogo (ex: Hades, Elden Ring...)"
+            autocomplete="off"
+          />
+          <button type="submit" class="primary-btn">Buscar</button>
+        </form>
+
+        <div id="statusMsg" class="status-msg" hidden></div>
+        <ul id="resultsList" class="results-list"></ul>
+      </section>
+
+      <section id="dealsView" class="state-view" hidden>
+        <button id="backBtn" class="link-btn">&larr; Voltar à busca</button>
+        <div id="gameHeader" class="game-header"></div>
+        <div id="dealsStatus" class="status-msg" hidden></div>
+        <ul id="dealsList" class="deals-list"></ul>
+        <p id="historyLowNote" class="history-low" hidden></p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      Dados de preços por <a href="https://isthereanydeal.com" target="_blank" rel="noopener">IsThereAnyDeal</a>
+    </footer>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

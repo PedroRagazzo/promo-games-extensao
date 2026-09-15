@@ -31,15 +31,29 @@ A extensão precisa de uma chave de API gratuita do IsThereAnyDeal:
 ## Como usar
 
 1. Clique no ícone da extensão.
-2. Digite o nome do jogo e clique em **Buscar**.
-3. Escolha o resultado correto na lista.
-4. Veja as ofertas ordenadas da mais barata para a mais cara, com:
+2. Ao abrir, o popup já mostra automaticamente os **🔥 Destaques de hoje** —
+   os jogos com maior desconto no momento, um por card, com loja, preço,
+   desconto e link direto.
+3. Para pesquisar um jogo específico, digite o nome e clique em **Buscar**;
+   use **Ver destaques de hoje** para voltar aos destaques.
+4. Escolha o resultado correto na lista (ou clique no título de um destaque)
+   para ver a comparação completa entre todas as lojas, com:
    - Preço atual e preço original (riscado) quando há desconto;
    - Percentual de desconto;
    - Selo **Oficial** (loja da própria publisher/plataforma) ou **Revendedor**
      (terceiros como Nuuvem, GreenManGaming etc.);
    - Selo **Menor preço** na melhor oferta;
    - Link **Ver oferta** que abre a loja em uma nova aba.
+
+### Notificação diária (opcional)
+
+Nas configurações (⚙), em **Destaques diários**, você pode ativar uma
+notificação do navegador uma vez por dia com a melhor promoção encontrada
+(ativada por padrão, às 12h). Ajuste o horário no seletor **Horário da
+notificação**. Clicar na notificação abre a oferta direto no navegador.
+
+Os destaques de hoje ficam em cache local por dia (por país configurado),
+então abrir o popup várias vezes no mesmo dia não gera chamadas extras à API.
 
 ## Sobre cupons de desconto
 
@@ -57,12 +71,14 @@ mantido manualmente.
 ## Estrutura do projeto
 
 ```
-manifest.json          Configuração da extensão (Manifest V3)
-popup/                 Interface principal (busca + comparação de preços)
-options/               Página de configurações (chave de API + país)
-lib/itad-api.js        Cliente da API do IsThereAnyDeal
-lib/settings.js        Leitura/gravação de configurações (chrome.storage.sync)
-icons/                 Ícones da extensão
+manifest.json           Configuração da extensão (Manifest V3)
+popup/                  Interface principal (destaques do dia, busca, comparação de preços)
+options/                Página de configurações (chave de API, país, notificação diária)
+background/background.js  Agenda e dispara a notificação diária (chrome.alarms)
+lib/itad-api.js         Cliente da API do IsThereAnyDeal
+lib/settings.js         Leitura/gravação de configurações (chrome.storage.sync)
+lib/daily-deals.js      Cache diário dos destaques (chrome.storage.local)
+icons/                  Ícones da extensão
 ```
 
 ## Limitações conhecidas

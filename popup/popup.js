@@ -1,5 +1,6 @@
 import { searchGames, getPrices, isOfficialShop } from "../lib/itad-api.js";
 import { getSettings } from "../lib/settings.js";
+import { getDailyHighlights } from "../lib/daily-deals.js";
 
 const els = {
   noKeyView: document.getElementById("noKeyView"),
@@ -9,6 +10,8 @@ const els = {
   openOptions: document.getElementById("openOptions"),
   searchForm: document.getElementById("searchForm"),
   searchInput: document.getElementById("searchInput"),
+  resultsHeading: document.getElementById("resultsHeading"),
+  showHighlightsBtn: document.getElementById("showHighlightsBtn"),
   statusMsg: document.getElementById("statusMsg"),
   resultsList: document.getElementById("resultsList"),
   backBtn: document.getElementById("backBtn"),
@@ -48,8 +51,80 @@ function formatMoney(price) {
   }
 }
 
+function createDealCard(deal, { bestPrice = false } = {}) {
+  const li = document.createElement("li");
+  li.className = "deal-item" + (bestPrice ? " best" : "");
+
+  const topRow = document.createElement("div");
+  topRow.className = "deal-top-row";
+
+  const shopName = document.createElement("span");
+  shopName.className = "deal-shop-name";
+  shopName.textContent = deal.shop.name;
+  topRow.appendChild(shopName);
+
+  const officialBadge = document.createElement("span");
+  officialBadge.className = "badge " + (isOfficialShop(deal.shop.name) ? "official" : "third-party");
+  officialBadge.textContent = isOfficialShop(deal.shop.name) ? "Oficial" : "Revendedor";
+  topRow.appendChild(officialBadge);
+
+  if (bestPrice) {
+    const bestBadge = document.createElement("span");
+    bestBadge.className = "badge best-price";
+    bestBadge.textContent = "Menor preço";
+    topRow.appendChild(bestBadge);
+  }
+
+  const priceRow = document.createElement("div");
+  priceRow.className = "deal-price-row";
+
+  const currentPrice = document.createElement("span");
+  currentPrice.className = "deal-price-current";
+  currentPrice.textContent = formatMoney(deal.price);
+  priceRow.appendChild(currentPrice);
+
+  if (deal.cut > 0) {
+    const regularPrice = document.createElement("span");
+    regularPrice.className = "deal-price-regular";
+    regularPrice.textContent = formatMoney(deal.regular);
+    priceRow.appendChild(regularPrice);
+
+    const cut = document.createElement("span");
+    cut.className = "deal-cut";
+    cut.textContent = `-${deal.cut}%`;
+    priceRow.appendChild(cut);
+  }
+
+  li.appendChild(topRow);
+  li.appendChild(priceRow);
+
+  if (deal.voucher) {
+    const voucher = document.createElement("div");
+    voucher.className = "deal-voucher";
+    voucher.textContent = `Cupom aplicado automaticamente no preço: ${deal.voucher}`;
+    li.appendChild(voucher);
+  }
+
+  const link = document.createElement("a");
+  link.className = "deal-link";
+  link.href = deal.url;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "Ver oferta →";
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    chrome.tabs.create({ url: deal.url });
+  });
+  li.appendChild(link);
+
+  return li;
+}
+
 function renderSearchResults(games) {
   els.resultsList.innerHTML = "";
+  setResultsHeading("Resultados da busca");
+  els.showHighlightsBtn.hidden = false;
+
   if (!games.length) {
     setStatus(els.statusMsg, "Nenhum jogo encontrado com esse nome.");
     return;
@@ -123,75 +198,65 @@ function renderDeals(result) {
   setStatus(els.dealsStatus, null);
 
   const deals = [...result.deals].sort((a, b) => a.price.amount - b.price.amount);
-
   deals.forEach((deal, index) => {
-    const li = document.createElement("li");
-    li.className = "deal-item" + (index === 0 ? " best" : "");
-
-    const topRow = document.createElement("div");
-    topRow.className = "deal-top-row";
-
-    const shopName = document.createElement("span");
-    shopName.className = "deal-shop-name";
-    shopName.textContent = deal.shop.name;
-    topRow.appendChild(shopName);
-
-    const officialBadge = document.createElement("span");
-    officialBadge.className = "badge " + (isOfficialShop(deal.shop.name) ? "official" : "third-party");
-    officialBadge.textContent = isOfficialShop(deal.shop.name) ? "Oficial" : "Revendedor";
-    topRow.appendChild(officialBadge);
-
-    if (index === 0) {
-      const bestBadge = document.createElement("span");
-      bestBadge.className = "badge best-price";
-      bestBadge.textContent = "Menor preço";
-      topRow.appendChild(bestBadge);
-    }
-
-    const priceRow = document.createElement("div");
-    priceRow.className = "deal-price-row";
-
-    const currentPrice = document.createElement("span");
-    currentPrice.className = "deal-price-current";
-    currentPrice.textContent = formatMoney(deal.price);
-    priceRow.appendChild(currentPrice);
-
-    if (deal.cut > 0) {
-      const regularPrice = document.createElement("span");
-      regularPrice.className = "deal-price-regular";
-      regularPrice.textContent = formatMoney(deal.regular);
-      priceRow.appendChild(regularPrice);
-
-      const cut = document.createElement("span");
-      cut.className = "deal-cut";
-      cut.textContent = `-${deal.cut}%`;
-      priceRow.appendChild(cut);
-    }
-
-    li.appendChild(topRow);
-    li.appendChild(priceRow);
-
-    if (deal.voucher) {
-      const voucher = document.createElement("div");
-      voucher.className = "deal-voucher";
-      voucher.textContent = `Cupom aplicado automaticamente no preço: ${deal.voucher}`;
-      li.appendChild(voucher);
-    }
-
-    const link = document.createElement("a");
-    link.className = "deal-link";
-    link.href = deal.url;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.textContent = "Ver oferta →";
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      chrome.tabs.create({ url: deal.url });
-    });
-    li.appendChild(link);
-
-    els.dealsList.appendChild(li);
+    els.dealsList.appendChild(createDealCard(deal, { bestPrice: index === 0 }));
   });
+}
+
+function setResultsHeading(text) {
+  els.resultsHeading.textContent = text;
+}
+
+function renderDailyHighlights(games) {
+  els.resultsList.innerHTML = "";
+  els.showHighlightsBtn.hidden = true;
+
+  if (!games.length) {
+    setStatus(els.statusMsg, "Nenhum destaque disponível no momento.");
+    return;
+  }
+  setStatus(els.statusMsg, null);
+
+  for (const game of games) {
+    const card = createDealCard(game.deal);
+    card.classList.add("highlight-card");
+
+    const titleRow = document.createElement("button");
+    titleRow.type = "button";
+    titleRow.className = "highlight-title-row";
+
+    const thumb = document.createElement("img");
+    thumb.className = "result-thumb";
+    thumb.src = game.assets?.banner145 || game.assets?.boxart || "";
+    thumb.alt = "";
+    thumb.onerror = () => (thumb.style.visibility = "hidden");
+
+    const title = document.createElement("span");
+    title.className = "result-title";
+    title.textContent = game.title;
+
+    titleRow.appendChild(thumb);
+    titleRow.appendChild(title);
+    titleRow.addEventListener("click", () => openDealsFor(game));
+
+    card.insertBefore(titleRow, card.firstChild);
+    els.resultsList.appendChild(card);
+  }
+}
+
+async function loadDailyHighlights() {
+  els.searchInput.value = "";
+  setResultsHeading("🔥 Destaques de hoje");
+  els.showHighlightsBtn.hidden = true;
+  els.resultsList.innerHTML = "";
+  setStatus(els.statusMsg, "Carregando destaques de hoje...", { loading: true });
+
+  try {
+    const games = await getDailyHighlights(settings.apiKey, settings.country, 8);
+    renderDailyHighlights(games);
+  } catch (err) {
+    setStatus(els.statusMsg, err.message || "Erro ao carregar destaques.", { error: true });
+  }
 }
 
 async function handleSearch(e) {
@@ -199,7 +264,6 @@ async function handleSearch(e) {
   const title = els.searchInput.value.trim();
   if (!title) return;
 
-  els.resultsList.innerHTML = "";
   setStatus(els.statusMsg, "Buscando jogos...", { loading: true });
 
   try {
@@ -226,11 +290,13 @@ async function init() {
   } else {
     showView("searchView");
     els.searchInput.focus();
+    loadDailyHighlights();
   }
 
   els.goToOptionsBtn.addEventListener("click", openOptionsPage);
   els.openOptions.addEventListener("click", openOptionsPage);
   els.searchForm.addEventListener("submit", handleSearch);
+  els.showHighlightsBtn.addEventListener("click", loadDailyHighlights);
   els.backBtn.addEventListener("click", () => showView("searchView"));
 }
 

@@ -6,6 +6,15 @@ const countrySelect = document.getElementById("countrySelect");
 const saveBtn = document.getElementById("saveBtn");
 const testBtn = document.getElementById("testBtn");
 const feedback = document.getElementById("feedback");
+const dailyNotifInput = document.getElementById("dailyNotifInput");
+const notifyHourSelect = document.getElementById("notifyHourSelect");
+
+for (let h = 0; h < 24; h++) {
+  const option = document.createElement("option");
+  option.value = String(h);
+  option.textContent = `${String(h).padStart(2, "0")}:00`;
+  notifyHourSelect.appendChild(option);
+}
 
 function showFeedback(message, isError = false) {
   feedback.hidden = false;
@@ -17,6 +26,8 @@ async function loadCurrentSettings() {
   const settings = await getSettings();
   apiKeyInput.value = settings.apiKey;
   countrySelect.value = settings.country;
+  dailyNotifInput.checked = settings.dailyNotifications;
+  notifyHourSelect.value = String(settings.notifyHour);
 }
 
 async function handleSave() {
@@ -25,6 +36,14 @@ async function handleSave() {
     country: countrySelect.value,
   });
   showFeedback("Configurações salvas com sucesso.");
+}
+
+async function handleNotificationPrefsChange() {
+  await saveSettings({
+    dailyNotifications: dailyNotifInput.checked,
+    notifyHour: Number(notifyHourSelect.value),
+  });
+  showFeedback("Preferência de notificação salva.");
 }
 
 async function handleTest() {
@@ -44,5 +63,7 @@ async function handleTest() {
 
 saveBtn.addEventListener("click", handleSave);
 testBtn.addEventListener("click", handleTest);
+dailyNotifInput.addEventListener("change", handleNotificationPrefsChange);
+notifyHourSelect.addEventListener("change", handleNotificationPrefsChange);
 
 loadCurrentSettings();

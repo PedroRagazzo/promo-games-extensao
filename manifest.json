@@ -1,8 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Promo Games - Comparador de Preços",
-  "version": "1.0.0",
-  "description": "Pesquise um jogo e veja o menor preço entre Steam, Epic Games, Nuuvem, GreenManGaming e outras lojas, com desconto e preço original.",
+  "version": "1.1.0",
+  "description": "Pesquise um jogo e veja o menor preço entre Steam, Epic Games, Nuuvem, GreenManGaming e outras lojas, com desconto, preço original e destaques diários de promoções.",
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -22,6 +26,6 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "alarms", "notifications"],
   "host_permissions": ["https://api.isthereanydeal.com/*"]
 }

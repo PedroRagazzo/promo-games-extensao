@@ -130,6 +130,46 @@ body {
   color: var(--danger);
 }
 
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.results-header h2 {
+  font-size: 13px;
+  margin: 0;
+  flex: 1;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.results-header .link-btn {
+  margin: 0;
+  font-size: 12px;
+}
+
+.highlight-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  margin-bottom: 6px;
+}
+
+.highlight-title-row .result-title {
+  font-weight: 600;
+}
+
 .results-list,
 .deals-list {
   list-style: none;

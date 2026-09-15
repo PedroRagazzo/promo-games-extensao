@@ -1,0 +1,140 @@
+/* Tema "Fliperama Retrô" — fontes e tokens compartilhados entre popup e opções. */
+
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("../fonts/press-start-2p-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("../fonts/space-grotesk-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("../fonts/space-grotesk-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("../fonts/space-grotesk-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Cabine do fliperama: roxo quase-preto, painel um tom acima. */
+  --bg-deep: #150f2e;
+  --bg-panel: #1f1640;
+  --bg-panel-raised: #2a1c57;
+  --border: #40316f;
+  --border-dim: #2c2153;
+
+  --ink: #f1ecff;
+  --muted: #9086b8;
+
+  /* Luzes de letreiro: ciano = informação/ação, magenta = promoção/destaque, âmbar = moeda/oficial. */
+  --neon-cyan: #33ffe0;
+  --neon-cyan-dim: #1fa891;
+  --neon-magenta: #ff3ea5;
+  --neon-magenta-dim: #b2266f;
+  --coin-amber: #ffc542;
+  --coin-amber-dim: #b08a2e;
+
+  --danger: var(--neon-magenta);
+
+  --font-display: "Press Start 2P", "Courier New", monospace;
+  --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  --chamfer: 8px;
+  --chamfer-sm: 5px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-deep);
+  color: var(--ink);
+  font-family: var(--font-body);
+  position: relative;
+}
+
+/* Varredura de CRT: bem sutil, só textura ambiente. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+::selection {
+  background: var(--neon-magenta);
+  color: var(--bg-deep);
+}
+
+/* Painel com cantos chanfrados — a "janela de gabinete" que dá identidade ao layout. */
+.pixel-panel {
+  clip-path: polygon(
+    var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0,
+    100% var(--chamfer),
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%,
+    0 calc(100% - var(--chamfer)),
+    0 var(--chamfer)
+  );
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+}
+
+.pixel-panel-sm {
+  clip-path: polygon(
+    var(--chamfer-sm) 0,
+    calc(100% - var(--chamfer-sm)) 0,
+    100% var(--chamfer-sm),
+    100% calc(100% - var(--chamfer-sm)),
+    calc(100% - var(--chamfer-sm)) 100%,
+    var(--chamfer-sm) 100%,
+    0 calc(100% - var(--chamfer-sm)),
+    0 var(--chamfer-sm)
+  );
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

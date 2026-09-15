@@ -8,6 +8,12 @@ link direto para a oferta.
 Os dados de preço vêm da API pública do [IsThereAnyDeal](https://isthereanydeal.com)
 (ITAD), que agrega dezenas de lojas em várias regiões.
 
+Visual: tema "fliperama retrô" — fundo roxo quase-preto, painéis com cantos
+chanfrados, logotipo em fonte pixelada (Press Start 2P) e acentos neon: ciano
+para preço/ação, magenta para promoção/desconto, âmbar para lojas oficiais.
+Fontes hospedadas localmente em [fonts/](fonts/), tokens de cor e tipografia
+compartilhados em [shared/theme.css](shared/theme.css).
+
 ## Instalação (modo desenvolvedor)
 
 1. Abra `chrome://extensions` (ou `edge://extensions`).
@@ -78,7 +84,9 @@ background/background.js  Agenda e dispara a notificação diária (chrome.alarm
 lib/itad-api.js         Cliente da API do IsThereAnyDeal
 lib/settings.js         Leitura/gravação de configurações (chrome.storage.sync)
 lib/daily-deals.js      Cache diário dos destaques (chrome.storage.local)
-icons/                  Ícones da extensão
+icons/                  Ícones da extensão (pixel art)
+fonts/                  Fontes autohospedadas (Press Start 2P, Space Grotesk)
+shared/theme.css        Tokens de cor/tipografia e componentes base do tema
 ```
 
 ## Limitações conhecidas

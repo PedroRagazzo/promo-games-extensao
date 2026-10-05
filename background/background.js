@@ -1,7 +1,10 @@
 import { getSettings } from "../lib/settings.js";
 import { getDailyHighlights } from "../lib/daily-deals.js";
+import { getPrices } from "../lib/itad-api.js";
+import { getWatchlist, updateNotifiedPrices, evaluateAlerts } from "../lib/watchlist.js";
 
 const ALARM_NAME = "promo-games-daily-check";
+const WATCH_ALARM_NAME = "promo-games-watchlist-check";
 
 function formatMoney(price) {
   try {
@@ -69,11 +72,64 @@ async function runDailyCheck() {
   });
 }
 
-chrome.runtime.onInstalled.addListener(scheduleAlarm);
-chrome.runtime.onStartup.addListener(scheduleAlarm);
+function scheduleWatchAlarm() {
+  chrome.alarms.create(WATCH_ALARM_NAME, { delayInMinutes: 1, periodInMinutes: 180 });
+}
+
+async function runWatchlistCheck() {
+  const settings = await getSettings();
+  if (!settings.apiKey) return;
+
+  const items = Object.values(await getWatchlist());
+  if (!items.length) return;
+
+  let results;
+  try {
+    results = await getPrices(
+      settings.apiKey,
+      items.map((i) => i.id),
+      settings.country
+    );
+  } catch (err) {
+    console.error("Promo Games: falha ao checar alertas de preço", err);
+    return;
+  }
+
+  const { triggered, updates } = evaluateAlerts(items, results);
+
+  for (const { item, deal } of triggered) {
+    const notificationId = `promo-games-alert-${item.id}`;
+    chrome.notifications.create(notificationId, {
+      type: "basic",
+      iconUrl: chrome.runtime.getURL("icons/icon128.png"),
+      title: `${item.title} chegou ao seu preço`,
+      message: `${deal.shop.name}: ${formatMoney(deal.price)} (sua meta: ${formatMoney({
+        amount: item.targetPrice,
+        currency: item.currency,
+      })}). Clique para ver a oferta.`,
+      priority: 1,
+    });
+    await chrome.storage.local.set({ [`dealUrl:${notificationId}`]: deal.url });
+  }
+
+  await updateNotifiedPrices(updates);
+}
+
+function scheduleAll() {
+  scheduleAlarm();
+  scheduleWatchAlarm();
+}
+
+chrome.runtime.onInstalled.addListener(scheduleAll);
+chrome.runtime.onStartup.addListener(scheduleAll);
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) runDailyCheck();
+  if (alarm.name === WATCH_ALARM_NAME) runWatchlistCheck();
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === "check-watchlist") runWatchlistCheck();
 });
 
 chrome.notifications.onClicked.addListener(async (notificationId) => {

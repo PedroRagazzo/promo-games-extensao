@@ -9,6 +9,7 @@
     <header class="app-header">
       <img src="../icons/icon32.png" alt="" width="20" height="20" />
       <h1>Promo Games</h1>
+      <button id="openAlerts" class="icon-btn" title="Meus alertas de preço" aria-label="Meus alertas de preço">🔔</button>
       <button id="openOptions" class="icon-btn" title="Configurações" aria-label="Configurações">⚙</button>
     </header>
 
@@ -39,11 +40,21 @@
       </section>
 
       <section id="dealsView" class="state-view" hidden>
-        <button id="backBtn" class="link-btn">&larr; Voltar à busca</button>
+        <button id="backBtn" class="link-btn">&larr; Voltar</button>
         <div id="gameHeader" class="game-header"></div>
         <div id="dealsStatus" class="status-msg" hidden></div>
         <ul id="dealsList" class="deals-list"></ul>
+        <div id="watchPanel" class="watch-panel" hidden></div>
         <p id="historyLowNote" class="history-low" hidden></p>
+      </section>
+
+      <section id="alertsView" class="state-view" hidden>
+        <button id="alertsBackBtn" class="link-btn">&larr; Voltar</button>
+        <div class="results-header">
+          <h2>🔔 Meus alertas de preço</h2>
+        </div>
+        <div id="alertsStatus" class="status-msg" hidden></div>
+        <ul id="alertsList" class="results-list"></ul>
       </section>
     </main>
 

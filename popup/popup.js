@@ -1,13 +1,22 @@
 import { searchGames, getPrices, isOfficialShop } from "../lib/itad-api.js";
 import { getSettings } from "../lib/settings.js";
 import { getDailyHighlights } from "../lib/daily-deals.js";
+import { getWatchlist, addAlert, removeAlert } from "../lib/watchlist.js";
+
+const VIEWS = ["noKeyView", "searchView", "dealsView", "alertsView"];
 
 const els = {
   noKeyView: document.getElementById("noKeyView"),
   searchView: document.getElementById("searchView"),
   dealsView: document.getElementById("dealsView"),
+  alertsView: document.getElementById("alertsView"),
   goToOptionsBtn: document.getElementById("goToOptionsBtn"),
   openOptions: document.getElementById("openOptions"),
+  openAlerts: document.getElementById("openAlerts"),
+  alertsBackBtn: document.getElementById("alertsBackBtn"),
+  alertsStatus: document.getElementById("alertsStatus"),
+  alertsList: document.getElementById("alertsList"),
+  watchPanel: document.getElementById("watchPanel"),
   searchForm: document.getElementById("searchForm"),
   searchInput: document.getElementById("searchInput"),
   resultsHeading: document.getElementById("resultsHeading"),
@@ -22,11 +31,16 @@ const els = {
 };
 
 let settings = null;
+let dealsReturnView = "searchView";
 
 function showView(name) {
-  for (const key of ["noKeyView", "searchView", "dealsView"]) {
+  for (const key of VIEWS) {
     els[key].hidden = key !== name;
   }
+}
+
+function currentViewName() {
+  return VIEWS.find((key) => !els[key].hidden);
 }
 
 function setStatus(el, message, { error = false, loading = false } = {}) {
@@ -164,9 +178,11 @@ function renderSearchResults(games) {
 }
 
 async function openDealsFor(game) {
+  dealsReturnView = currentViewName();
   showView("dealsView");
   els.gameHeader.innerHTML = "";
   els.dealsList.innerHTML = "";
+  els.watchPanel.hidden = true;
   els.historyLowNote.hidden = true;
   setStatus(els.dealsStatus, "Buscando os melhores preços...", { loading: true });
 
@@ -182,6 +198,7 @@ async function openDealsFor(game) {
   try {
     const [result] = await getPrices(settings.apiKey, [game.id], settings.country);
     renderDeals(result);
+    renderWatchPanel(game, result);
   } catch (err) {
     setStatus(els.dealsStatus, err.message || "Erro ao buscar preços.", { error: true });
   }
@@ -209,6 +226,158 @@ function renderDeals(result) {
   deals.forEach((deal, index) => {
     els.dealsList.appendChild(createDealCard(deal, { bestPrice: index === 0 }));
   });
+}
+
+// Aceita "29,90", "29.90" e "1.299,90".
+function parsePrice(text) {
+  let s = text.trim();
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function formatInputPrice(amount) {
+  return amount.toFixed(2).replace(".", ",");
+}
+
+async function renderWatchPanel(game, result) {
+  els.watchPanel.innerHTML = "";
+  els.watchPanel.hidden = true;
+
+  const currency = result?.deals?.[0]?.price.currency ?? result?.historyLow?.all?.currency;
+  if (!currency) return;
+
+  const existing = (await getWatchlist())[game.id];
+
+  const title = document.createElement("h3");
+  title.className = "watch-title";
+  title.textContent = "🔔 Alerta de preço";
+  els.watchPanel.appendChild(title);
+
+  if (existing) {
+    const text = document.createElement("p");
+    text.className = "watch-text";
+    text.textContent = `Você será avisado quando alguma loja chegar a ${formatMoney({
+      amount: existing.targetPrice,
+      currency: existing.currency,
+    })} ou menos.`;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "link-btn";
+    removeBtn.textContent = "Remover alerta";
+    removeBtn.addEventListener("click", async () => {
+      await removeAlert(game.id);
+      renderWatchPanel(game, result);
+    });
+
+    els.watchPanel.appendChild(text);
+    els.watchPanel.appendChild(removeBtn);
+    els.watchPanel.hidden = false;
+    return;
+  }
+
+  const cheapest = result.deals?.length ? Math.min(...result.deals.map((d) => d.price.amount)) : null;
+  const suggestion = result.historyLow?.all?.amount ?? (cheapest ? cheapest * 0.8 : null);
+
+  const form = document.createElement("form");
+  form.className = "watch-form";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "decimal";
+  input.className = "watch-input";
+  input.setAttribute("aria-label", `Preço desejado (${currency})`);
+  input.placeholder = "Ex: 29,90";
+  if (suggestion) input.value = formatInputPrice(suggestion);
+
+  const label = document.createElement("span");
+  label.className = "watch-label";
+  label.textContent = `Avisar a partir de (${currency})`;
+
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.className = "primary-btn";
+  submit.textContent = "Criar alerta";
+
+  const message = document.createElement("p");
+  message.className = "watch-msg";
+  message.hidden = true;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const target = parsePrice(input.value);
+    if (target === null) {
+      message.textContent = "Digite um preço maior que zero, como 29,90.";
+      message.hidden = false;
+      return;
+    }
+    await addAlert(game, target, currency);
+    chrome.runtime.sendMessage({ type: "check-watchlist" });
+    renderWatchPanel(game, result);
+  });
+
+  els.watchPanel.appendChild(label);
+  form.appendChild(input);
+  form.appendChild(submit);
+  els.watchPanel.appendChild(form);
+  els.watchPanel.appendChild(message);
+  els.watchPanel.hidden = false;
+}
+
+async function renderAlertsView() {
+  els.alertsList.innerHTML = "";
+  const items = Object.values(await getWatchlist());
+
+  if (!items.length) {
+    setStatus(
+      els.alertsStatus,
+      "Nenhum alerta ainda. Abra a comparação de preços de um jogo e crie um alerta com o preço que você quer pagar."
+    );
+    return;
+  }
+  setStatus(els.alertsStatus, null);
+
+  for (const item of items) {
+    const li = document.createElement("li");
+    li.className = "alert-row";
+
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "result-item";
+
+    const thumb = document.createElement("img");
+    thumb.className = "result-thumb";
+    thumb.src = item.thumb;
+    thumb.alt = "";
+    thumb.onerror = () => (thumb.style.visibility = "hidden");
+
+    const title = document.createElement("span");
+    title.className = "result-title";
+    title.textContent = item.title;
+
+    const target = document.createElement("span");
+    target.className = "alert-target";
+    target.textContent = `≤ ${formatMoney({ amount: item.targetPrice, currency: item.currency })}`;
+
+    open.append(thumb, title, target);
+    open.addEventListener("click", () =>
+      openDealsFor({ id: item.id, title: item.title, assets: { banner145: item.thumb } })
+    );
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "link-btn";
+    remove.textContent = "Remover";
+    remove.setAttribute("aria-label", `Remover alerta de ${item.title}`);
+    remove.addEventListener("click", async () => {
+      await removeAlert(item.id);
+      renderAlertsView();
+    });
+
+    li.append(open, remove);
+    els.alertsList.appendChild(li);
+  }
 }
 
 function setResultsHeading(text) {
@@ -305,7 +474,14 @@ async function init() {
   els.openOptions.addEventListener("click", openOptionsPage);
   els.searchForm.addEventListener("submit", handleSearch);
   els.showHighlightsBtn.addEventListener("click", loadDailyHighlights);
-  els.backBtn.addEventListener("click", () => showView("searchView"));
+  els.backBtn.addEventListener("click", () => showView(dealsReturnView));
+  els.openAlerts.addEventListener("click", () => {
+    showView("alertsView");
+    renderAlertsView();
+  });
+  els.alertsBackBtn.addEventListener("click", () =>
+    showView(settings.apiKey ? "searchView" : "noKeyView")
+  );
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {

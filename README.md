@@ -62,6 +62,17 @@ notificação**. Clicar na notificação abre a oferta direto no navegador.
 Os destaques de hoje ficam em cache local por dia (por país configurado),
 então abrir o popup várias vezes no mesmo dia não gera chamadas extras à API.
 
+### Alertas de preço
+
+Na comparação de preços de qualquer jogo, o painel **🔔 Alerta de preço** deixa
+você definir o valor que quer pagar (sugerimos o menor preço já registrado).
+Quando alguma loja chegar nesse valor ou abaixo, o navegador mostra uma
+notificação e clicar nela abre a oferta. A extensão confere todos os alertas a
+cada 3 horas (uma única chamada à API) e avisa de novo só se o preço cair ainda
+mais ou se voltar a subir acima da meta e depois cair de novo. O sino no
+cabeçalho lista e remove seus alertas. A meta fica na moeda do país escolhido
+nas configurações; ofertas em outra moeda são ignoradas.
+
 ## Sobre cupons de desconto
 
 Não existe uma API pública confiável que liste cupons de desconto válidos para
@@ -85,6 +96,7 @@ background/background.js  Agenda e dispara a notificação diária (chrome.alarm
 lib/itad-api.js         Cliente da API do IsThereAnyDeal
 lib/settings.js         Leitura/gravação de configurações (chrome.storage.sync)
 lib/daily-deals.js      Cache diário dos destaques (chrome.storage.local)
+lib/watchlist.js        Alertas de preço: lista acompanhada e regra de disparo
 icons/                  Ícones da extensão (pixel art)
 fonts/                  Fontes autohospedadas (Press Start 2P, Space Grotesk)
 shared/theme.css        Tokens de cor/tipografia e componentes base do tema

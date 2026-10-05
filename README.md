@@ -38,8 +38,9 @@ A extensão precisa de uma chave de API gratuita do IsThereAnyDeal:
 
 1. Clique no ícone da extensão.
 2. Ao abrir, o popup já mostra automaticamente os **🔥 Destaques de hoje** —
-   os jogos com maior desconto no momento, um por card, com loja, preço,
-   desconto e link direto.
+   os jogos com maior desconto no momento (só jogos, sem DLCs, com pelo menos
+   30% off e boa avaliação na Steam), um por card, com loja, preço, desconto e
+   link direto.
 3. Para pesquisar um jogo específico, digite o nome e clique em **Buscar**;
    use **Ver destaques de hoje** para voltar aos destaques.
 4. Escolha o resultado correto na lista (ou clique no título de um destaque)

@@ -70,7 +70,8 @@ Quando alguma loja chegar nesse valor ou abaixo, o navegador mostra uma
 notificação e clicar nela abre a oferta. A extensão confere todos os alertas a
 cada 3 horas (uma única chamada à API) e avisa de novo só se o preço cair ainda
 mais ou se voltar a subir acima da meta e depois cair de novo. O sino no
-cabeçalho lista e remove seus alertas. A meta fica na moeda do país escolhido
+cabeçalho lista seus alertas, mostra o menor preço visto na última checagem
+("agora") ao lado da meta e permite removê-los. A meta fica na moeda do país escolhido
 nas configurações; ofertas em outra moeda são ignoradas.
 
 ## Sobre cupons de desconto
@@ -97,9 +98,19 @@ lib/itad-api.js         Cliente da API do IsThereAnyDeal
 lib/settings.js         Leitura/gravação de configurações (chrome.storage.sync)
 lib/daily-deals.js      Cache diário dos destaques (chrome.storage.local)
 lib/watchlist.js        Alertas de preço: lista acompanhada e regra de disparo
+tests/                  Testes automatizados (node --test)
 icons/                  Ícones da extensão (pixel art)
 fonts/                  Fontes autohospedadas (Press Start 2P, Space Grotesk)
 shared/theme.css        Tokens de cor/tipografia e componentes base do tema
+```
+
+## Testes
+
+Testes automatizados da lógica (cliente da API e regra dos alertas), sem
+dependências além do Node 18+:
+
+```bash
+npm test
 ```
 
 ## Limitações conhecidas

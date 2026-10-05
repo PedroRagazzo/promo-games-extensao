@@ -277,8 +277,11 @@ async function renderWatchPanel(game, result) {
     return;
   }
 
-  const cheapest = result.deals?.length ? Math.min(...result.deals.map((d) => d.price.amount)) : null;
-  const suggestion = result.historyLow?.all?.amount ?? (cheapest ? cheapest * 0.8 : null);
+  const cheapestDeal = result.deals?.length
+    ? result.deals.reduce((a, b) => (b.price.amount < a.price.amount ? b : a))
+    : null;
+  const suggestion =
+    result.historyLow?.all?.amount ?? (cheapestDeal ? cheapestDeal.price.amount * 0.8 : null);
 
   const form = document.createElement("form");
   form.className = "watch-form";
@@ -312,7 +315,10 @@ async function renderWatchPanel(game, result) {
       message.hidden = false;
       return;
     }
-    await addAlert(game, target, currency);
+    const seen = cheapestDeal
+      ? { amount: cheapestDeal.price.amount, shop: cheapestDeal.shop.name }
+      : null;
+    await addAlert(game, target, currency, seen);
     chrome.runtime.sendMessage({ type: "check-watchlist" });
     renderWatchPanel(game, result);
   });
@@ -356,11 +362,26 @@ async function renderAlertsView() {
     title.className = "result-title";
     title.textContent = item.title;
 
+    const prices = document.createElement("span");
+    prices.className = "alert-prices";
+
+    if (item.lastSeen) {
+      const now = document.createElement("span");
+      now.className = "alert-now" + (item.lastSeen.amount <= item.targetPrice ? " hit" : "");
+      now.textContent = `agora ${formatMoney({ amount: item.lastSeen.amount, currency: item.currency })}`;
+      now.title = `${item.lastSeen.shop}, visto em ${new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+      }).format(item.lastSeen.at)}`;
+      prices.appendChild(now);
+    }
+
     const target = document.createElement("span");
     target.className = "alert-target";
-    target.textContent = `≤ ${formatMoney({ amount: item.targetPrice, currency: item.currency })}`;
+    target.textContent = `meta ${formatMoney({ amount: item.targetPrice, currency: item.currency })}`;
+    prices.appendChild(target);
 
-    open.append(thumb, title, target);
+    open.append(thumb, title, prices);
     open.addEventListener("click", () =>
       openDealsFor({ id: item.id, title: item.title, assets: { banner145: item.thumb } })
     );

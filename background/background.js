@@ -1,7 +1,7 @@
 import { getSettings } from "../lib/settings.js";
 import { getDailyHighlights } from "../lib/daily-deals.js";
 import { getPrices } from "../lib/itad-api.js";
-import { getWatchlist, updateNotifiedPrices, evaluateAlerts } from "../lib/watchlist.js";
+import { getWatchlist, saveCheckResults, evaluateAlerts } from "../lib/watchlist.js";
 
 const ALARM_NAME = "promo-games-daily-check";
 const WATCH_ALARM_NAME = "promo-games-watchlist-check";
@@ -95,7 +95,7 @@ async function runWatchlistCheck() {
     return;
   }
 
-  const { triggered, updates } = evaluateAlerts(items, results);
+  const { triggered, updates, seen } = evaluateAlerts(items, results);
 
   for (const { item, deal } of triggered) {
     const notificationId = `promo-games-alert-${item.id}`;
@@ -112,7 +112,7 @@ async function runWatchlistCheck() {
     await chrome.storage.local.set({ [`dealUrl:${notificationId}`]: deal.url });
   }
 
-  await updateNotifiedPrices(updates);
+  await saveCheckResults(updates, seen);
 }
 
 function scheduleAll() {

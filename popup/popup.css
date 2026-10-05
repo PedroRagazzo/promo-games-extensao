@@ -470,11 +470,27 @@ body {
   flex-shrink: 0;
 }
 
-.alert-target {
+.alert-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: 11px;
+}
+
+.alert-now {
+  color: var(--neon-cyan);
+}
+
+.alert-now.hit {
+  color: var(--neon-magenta);
+  font-weight: 700;
+}
+
+.alert-target {
   color: var(--coin-amber);
-  flex-shrink: 0;
 }
 
 .history-low {

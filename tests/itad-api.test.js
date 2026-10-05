@@ -52,6 +52,19 @@ test("getTopDeals devolve lista vazia se nenhum filtro encontrar ofertas", async
   assert.equal(calls.length, 2);
 });
 
+test("searchGames coloca jogos antes de pacotes e DLCs, mantendo a relevância dentro do grupo", async () => {
+  responder = () =>
+    json([
+      { id: "1", title: "Hades Soundtrack", type: "dlc" },
+      { id: "2", title: "Hades", type: "game" },
+      { id: "3", title: "Hades Bundle", type: "package" },
+      { id: "4", title: "Hades II", type: "game" },
+      { id: "5", title: "Outro", type: null },
+    ]);
+  const out = await searchGames("KEY", "hades");
+  assert.deepEqual(out.map((g) => g.id), ["2", "4", "3", "1", "5"]);
+});
+
 test("searchGames não chama a API com título vazio", async () => {
   assert.deepEqual(await searchGames("KEY", "   "), []);
   assert.equal(calls.length, 0);

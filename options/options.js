@@ -9,6 +9,29 @@ const feedback = document.getElementById("feedback");
 const dailyNotifInput = document.getElementById("dailyNotifInput");
 const notifyHourSelect = document.getElementById("notifyHourSelect");
 
+const COUNTRIES = [
+  ["DE", "Alemanha"], ["AR", "Argentina"], ["AU", "Austrália"], ["AT", "Áustria"],
+  ["BE", "Bélgica"], ["CA", "Canadá"], ["CL", "Chile"], ["CO", "Colômbia"],
+  ["KR", "Coreia do Sul"], ["DK", "Dinamarca"], ["ES", "Espanha"], ["US", "Estados Unidos"],
+  ["FI", "Finlândia"], ["FR", "França"], ["IN", "Índia"], ["IE", "Irlanda"],
+  ["IT", "Itália"], ["JP", "Japão"], ["MX", "México"], ["NO", "Noruega"],
+  ["NZ", "Nova Zelândia"], ["NL", "Países Baixos"], ["PE", "Peru"], ["PL", "Polônia"],
+  ["PT", "Portugal"], ["GB", "Reino Unido"], ["RU", "Rússia"], ["SE", "Suécia"],
+  ["CH", "Suíça"], ["TR", "Turquia"], ["UY", "Uruguai"], ["ZA", "África do Sul"],
+];
+
+// Brasil fixo no topo (padrão); o restante em ordem alfabética.
+const countryOptions = [
+  ["BR", "Brasil"],
+  ...COUNTRIES.sort((a, b) => a[1].localeCompare(b[1], "pt-BR")),
+];
+for (const [code, name] of countryOptions) {
+  const option = document.createElement("option");
+  option.value = code;
+  option.textContent = name;
+  countrySelect.appendChild(option);
+}
+
 for (let h = 0; h < 24; h++) {
   const option = document.createElement("option");
   option.value = String(h);

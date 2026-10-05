@@ -61,6 +61,7 @@ notificação**. Clicar na notificação abre a oferta direto no navegador.
 
 Os destaques de hoje ficam em cache local por dia (por país configurado),
 então abrir o popup várias vezes no mesmo dia não gera chamadas extras à API.
+O cache dos dias anteriores é apagado automaticamente.
 
 ### Alertas de preço
 

@@ -90,6 +90,22 @@ body::before {
   opacity: 0.5;
 }
 
+:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* clip-path corta tudo que fica fora da forma (outline e box-shadow externos),
+   então os elementos chanfrados desenham o anel de foco por dentro. */
+.icon-btn:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.result-item:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline-offset: -3px;
+}
+
 ::selection {
   background: var(--neon-magenta);
   color: var(--bg-deep);

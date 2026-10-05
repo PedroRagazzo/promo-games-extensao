@@ -187,7 +187,15 @@ async function openDealsFor(game) {
   }
 }
 
+function renderHistoryLow(result) {
+  const low = result?.historyLow?.all;
+  if (!low) return;
+  els.historyLowNote.textContent = `Menor preço já registrado: ${formatMoney(low)}`;
+  els.historyLowNote.hidden = false;
+}
+
 function renderDeals(result) {
+  renderHistoryLow(result);
   if (!result || !result.deals || !result.deals.length) {
     setStatus(
       els.dealsStatus,

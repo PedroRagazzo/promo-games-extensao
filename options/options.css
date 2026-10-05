@@ -82,9 +82,7 @@ select {
 
 input[type="text"]:focus,
 select:focus {
-  outline: none;
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 0 1px var(--neon-cyan);
 }
 
 .actions {
@@ -110,12 +108,12 @@ select:focus {
 .primary-btn {
   background: var(--neon-magenta);
   color: var(--bg-deep);
-  box-shadow: 0 3px 0 var(--neon-magenta-dim);
+  box-shadow: inset 0 -3px 0 var(--neon-magenta-dim);
 }
 
 .primary-btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 0 0 var(--neon-magenta-dim);
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 var(--neon-magenta-dim);
 }
 
 .secondary-btn {

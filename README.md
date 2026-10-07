@@ -114,6 +114,13 @@ dependências além do Node 18+:
 npm test
 ```
 
+## Licença
+
+Código sob licença [MIT](LICENSE). As fontes em [fonts/](fonts/) (Press Start 2P e
+Space Grotesk) são distribuídas sob a SIL Open Font License 1.1; os textos das
+licenças estão em `fonts/OFL-*.txt`. Os dados de preço pertencem ao
+[IsThereAnyDeal](https://isthereanydeal.com) e seguem os termos da API deles.
+
 ## Limitações conhecidas
 
 - A lista de lojas disponíveis depende do país escolhido nas configurações

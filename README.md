@@ -14,6 +14,27 @@ para preço/ação, magenta para promoção/desconto, âmbar para lojas oficiais
 Fontes hospedadas localmente em [fonts/](fonts/), tokens de cor e tipografia
 compartilhados em [shared/theme.css](shared/theme.css).
 
+## Capturas de tela
+
+<table>
+  <tr>
+    <td valign="top" align="center">
+      <img src="docs/screenshots/destaques.png" alt="Destaques de hoje: cards com loja, preço, desconto e selos Oficial/Revendedor" width="250"><br>
+      <sub>Destaques de hoje</sub>
+    </td>
+    <td valign="top" align="center">
+      <img src="docs/screenshots/comparacao.png" alt="Comparação de preços entre lojas, painel de alerta de preço e menor preço já registrado" width="250"><br>
+      <sub>Comparação de preços e alerta</sub>
+    </td>
+    <td valign="top" align="center">
+      <img src="docs/screenshots/alertas.png" alt="Lista de alertas de preço com o preço atual e a meta de cada jogo" width="250"><br>
+      <sub>Meus alertas de preço</sub>
+    </td>
+  </tr>
+</table>
+
+Jogos e preços das capturas são fictícios, só para ilustrar a interface.
+
 ## Instalação (modo desenvolvedor)
 
 1. Abra `chrome://extensions` (ou `edge://extensions`).

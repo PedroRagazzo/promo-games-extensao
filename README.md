@@ -8,11 +8,12 @@ link direto para a oferta.
 Os dados de preço vêm da API pública do [IsThereAnyDeal](https://isthereanydeal.com)
 (ITAD), que agrega dezenas de lojas em várias regiões.
 
-Visual: tema "fliperama retrô" — fundo roxo quase-preto, painéis com cantos
-chanfrados, logotipo em fonte pixelada (Press Start 2P) e acentos neon: ciano
-para preço/ação, magenta para promoção/desconto, âmbar para lojas oficiais.
-Fontes hospedadas localmente em [fonts/](fonts/), tokens de cor e tipografia
-compartilhados em [shared/theme.css](shared/theme.css).
+Visual: tema neo-brutalista "placa de liquidação" — cabeçalho amarelo, cartões
+brancos com bordas pretas grossas e sombras duras, tipografia pesada (Bricolage
+Grotesque) e cores com função fixa: vermelho para o desconto (um adesivo
+inclinado colado no canto de cada cartão), azul para ação e lojas oficiais,
+amarelo para o melhor preço. Fontes hospedadas localmente em [fonts/](fonts/),
+tokens de cor e tipografia compartilhados em [shared/theme.css](shared/theme.css).
 
 ## Capturas de tela
 
@@ -121,8 +122,8 @@ lib/settings.js         Leitura/gravação de configurações (chrome.storage.sy
 lib/daily-deals.js      Cache diário dos destaques (chrome.storage.local)
 lib/watchlist.js        Alertas de preço: lista acompanhada e regra de disparo
 tests/                  Testes automatizados (node --test)
-icons/                  Ícones da extensão (pixel art)
-fonts/                  Fontes autohospedadas (Press Start 2P, Space Grotesk)
+icons/                  Ícones da extensão
+fonts/                  Fonte autohospedada (Bricolage Grotesque)
 shared/theme.css        Tokens de cor/tipografia e componentes base do tema
 ```
 
@@ -137,9 +138,9 @@ npm test
 
 ## Licença
 
-Código sob licença [MIT](LICENSE). As fontes em [fonts/](fonts/) (Press Start 2P e
-Space Grotesk) são distribuídas sob a SIL Open Font License 1.1; os textos das
-licenças estão em `fonts/OFL-*.txt`. Os dados de preço pertencem ao
+Código sob licença [MIT](LICENSE). A fonte em [fonts/](fonts/) (Bricolage
+Grotesque) é distribuída sob a SIL Open Font License 1.1; o texto da licença
+está em `fonts/OFL-bricolage-grotesque.txt`. Os dados de preço pertencem ao
 [IsThereAnyDeal](https://isthereanydeal.com) e seguem os termos da API deles.
 
 ## Limitações conhecidas
